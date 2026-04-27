@@ -8,31 +8,49 @@
 <style>
 body {
   margin:0;
-  background:black;
+  background:#050505;
   color:white;
-  font-family:Arial;
-  overflow:hidden;
+  font-family:Arial, sans-serif;
 }
 
 #controls {
   position:fixed;
-  top:10px;
-  left:10px;
-  right:10px;
-  z-index:10;
+  top:15px;
+  left:15px;
+  right:15px;
+  background:rgba(0,0,0,0.85);
+  padding:15px;
+  border-radius:12px;
 }
 
 textarea {
   width:100%;
   height:120px;
-  padding:10px;
+  padding:12px;
   font-size:16px;
-  border-radius:8px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:white;
 }
 
-button, input, select {
+button {
   margin-top:10px;
-  padding:10px;
+  padding:10px 15px;
+  border:none;
+  border-radius:8px;
+  background:#d4af37;
+  color:black;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:hover {
+  opacity:0.85;
+}
+
+input, select {
+  margin-top:10px;
 }
 
 #teleprompter {
@@ -40,7 +58,7 @@ button, input, select {
   width:100%;
   bottom:-100%;
   text-align:center;
-  font-size:40px;
+  font-size:42px;
   padding:20px;
   line-height:1.6;
 }
@@ -51,13 +69,14 @@ button, input, select {
   left:0;
   right:0;
   text-align:center;
-  opacity:0.5;
+  opacity:0.4;
+  font-size:18px;
 }
 
 #badge {
   position:fixed;
-  top:5px;
-  right:10px;
+  top:10px;
+  right:15px;
   font-size:12px;
   opacity:0.6;
 }
