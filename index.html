@@ -7,51 +7,59 @@
 
 <style>
 body {
-  margin: 0;
-  background: black;
-  color: white;
-  font-family: Arial;
-  overflow: hidden;
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial;
+  overflow:hidden;
 }
 
 #controls {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  right: 10px;
-  z-index: 10;
+  position:fixed;
+  top:10px;
+  left:10px;
+  right:10px;
+  z-index:10;
 }
 
 textarea {
-  width: 100%;
-  height: 120px;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 8px;
+  width:100%;
+  height:120px;
+  padding:10px;
+  font-size:16px;
+  border-radius:8px;
 }
 
 button, input, select {
-  margin-top: 10px;
-  padding: 10px;
+  margin-top:10px;
+  padding:10px;
 }
 
 #teleprompter {
-  position: absolute;
-  width: 100%;
-  bottom: -100%;
-  text-align: center;
-  font-size: 40px;
-  padding: 20px;
-  line-height: 1.6;
+  position:absolute;
+  width:100%;
+  bottom:-100%;
+  text-align:center;
+  font-size:40px;
+  padding:20px;
+  line-height:1.6;
 }
 
 #guide {
-  position: fixed;
-  top: 40%;
-  left: 0;
-  right: 0;
-  text-align: center;
-  opacity: 0.5;
+  position:fixed;
+  top:40%;
+  left:0;
+  right:0;
+  text-align:center;
+  opacity:0.5;
+}
+
+#badge {
+  position:fixed;
+  top:5px;
+  right:10px;
+  font-size:12px;
+  opacity:0.6;
 }
 </style>
 </head>
@@ -67,7 +75,13 @@ button, input, select {
 
   <br>
 
-  Speed: <input type="range" id="speed" min="1" max="10" value="3">
+  Speed:
+  <input type="range" id="speed" min="1" max="10" value="3">
+
+  <br>
+
+  Font:
+  <input type="range" id="font" min="20" max="80" value="40">
 
   <br>
 
@@ -77,11 +91,16 @@ button, input, select {
     <option value="es">Spanish</option>
     <option value="pt">Portuguese</option>
     <option value="fr">French</option>
+    <option value="de">German</option>
+    <option value="it">Italian</option>
+    <option value="ar">Arabic</option>
+    <option value="ht">Haitian Creole</option>
   </select>
 
   <button onclick="translateText()">Translate</button>
 </div>
 
+<div id="badge">Creator Edition</div>
 <div id="guide">Look Here</div>
 <div id="teleprompter"></div>
 
@@ -111,6 +130,11 @@ function toggleMirror() {
   tele.style.transform =
     tele.style.transform === "scaleX(-1)" ? "scaleX(1)" : "scaleX(-1)";
 }
+
+document.getElementById("font").oninput = function() {
+  document.getElementById("teleprompter").style.fontSize =
+    this.value + "px";
+};
 
 async function translateText() {
   const text = document.getElementById("textInput").value;
