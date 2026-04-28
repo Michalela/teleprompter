@@ -1,177 +1,867 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Teleprompter</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Smart Teleprompter – Creator Edition</title>
 
 <style>
-body {
+:root {
+  --bg:#070403;
+  --panel:#130d0a;
+  --gold:#d8b46a;
+  --gold2:#f2dca2;
+  --cream:#f8f0df;
+  --muted:#bcae9c;
+  --border:rgba(216,180,106,.28);
+  --danger:#ff8a8a;
+  --success:#79e6b0;
+}
+
+*{box-sizing:border-box}
+
+body{
   margin:0;
-  background:#050505;
-  color:white;
-  font-family:Arial, sans-serif;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top left, rgba(216,180,106,.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(103,62,33,.28), transparent 35%),
+    linear-gradient(135deg,#050302,#120a07 55%,#050302);
+  color:var(--cream);
+  font-family:Arial, Helvetica, sans-serif;
+  overflow:hidden;
 }
 
-#controls {
-  position:fixed;
-  top:15px;
-  left:15px;
-  right:15px;
-  background:rgba(0,0,0,0.85);
-  padding:15px;
-  border-radius:12px;
+.app{
+  display:grid;
+  grid-template-columns:410px 1fr;
+  gap:18px;
+  height:100vh;
+  padding:18px;
 }
 
-textarea {
-  width:100%;
-  height:120px;
-  padding:12px;
-  font-size:16px;
-  border-radius:10px;
-  border:none;
-  background:#111;
-  color:white;
+.panel{
+  background:linear-gradient(180deg,rgba(29,19,15,.96),rgba(12,7,5,.96));
+  border:1px solid var(--border);
+  box-shadow:0 24px 60px rgba(0,0,0,.48);
+  border-radius:28px;
+  padding:22px;
+  overflow-y:auto;
 }
 
-button {
-  margin-top:10px;
-  padding:10px 15px;
-  border:none;
-  border-radius:8px;
-  background:#d4af37;
-  color:black;
-  font-weight:bold;
-  cursor:pointer;
+.brand-kicker{
+  color:var(--gold2);
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.18em;
+  margin-bottom:8px;
 }
 
-button:hover {
-  opacity:0.85;
+h1{
+  margin:0;
+  font-size:31px;
+  line-height:1.05;
+  letter-spacing:-.05em;
 }
 
-input, select {
-  margin-top:10px;
+.subtitle{
+  margin:10px 0 18px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.55;
 }
 
-#teleprompter {
-  position:absolute;
-  width:100%;
-  bottom:-100%;
-  text-align:center;
-  font-size:42px;
-  padding:20px;
+.pill{
+  display:inline-flex;
+  border:1px solid var(--border);
+  color:var(--gold2);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  background:rgba(216,180,106,.08);
+  margin-bottom:16px;
+}
+
+label{
+  display:block;
+  margin:15px 0 8px;
+  color:var(--gold2);
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+
+textarea,select,input[type=range]{width:100%}
+
+textarea,select{
+  background:#090605;
+  color:var(--cream);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:13px 14px;
+  font-size:15px;
+  outline:none;
+}
+
+textarea{
+  min-height:210px;
+  resize:vertical;
   line-height:1.6;
 }
 
-#guide {
-  position:fixed;
-  top:40%;
-  left:0;
-  right:0;
-  text-align:center;
-  opacity:0.4;
-  font-size:18px;
+select{height:48px}
+
+.controls-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:14px;
 }
 
-#badge {
-  position:fixed;
-  top:10px;
-  right:15px;
+button{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.04);
+  color:var(--cream);
+  border-radius:16px;
+  padding:13px 14px;
+  font-weight:800;
+  cursor:pointer;
+  min-height:46px;
+}
+
+button.primary{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#1a0e06;
+  border-color:transparent;
+}
+
+button.active{
+  background:var(--cream);
+  color:#1a0e06;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.slider-row{margin-top:15px}
+
+.slider-top{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+input[type=range]{accent-color:var(--gold)}
+
+.status{
+  margin-top:14px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:12px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  background:rgba(255,255,255,.03);
+}
+
+.status.success{
+  color:var(--success);
+  border-color:rgba(121,230,176,.35);
+}
+
+.status.error{
+  color:var(--danger);
+  border-color:rgba(255,138,138,.35);
+}
+
+.dictionary-box{
+  display:none;
+  margin-top:12px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:13px;
+  background:rgba(216,180,106,.06);
+}
+
+.upgrade-note{
+  margin-top:16px;
+  color:var(--muted);
   font-size:12px;
-  opacity:0.6;
+  line-height:1.45;
+}
+
+.stage{
+  position:relative;
+  overflow:hidden;
+  min-height:calc(100vh - 36px);
+  border:1px solid var(--border);
+  border-radius:34px;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,.58),rgba(0,0,0,.92)),
+    radial-gradient(circle at top, rgba(216,180,106,.2), transparent 30%),
+    #030202;
+  box-shadow:0 24px 70px rgba(0,0,0,.55);
+}
+
+.stage::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg, transparent, rgba(216,180,106,.08), transparent),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 92px);
+  opacity:.55;
+}
+
+.badge{
+  position:absolute;
+  top:18px;
+  left:18px;
+  z-index:8;
+  border:1px solid var(--border);
+  background:rgba(10,6,4,.72);
+  color:var(--gold2);
+  padding:9px 14px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+
+.top-title{
+  position:absolute;
+  top:18px;
+  right:18px;
+  z-index:8;
+  color:rgba(248,240,223,.72);
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+.tele-scroll{
+  height:100%;
+  max-height:calc(100vh - 36px);
+  overflow-y:auto;
+  scrollbar-width:none;
+  padding:130px 46px;
+  scroll-behavior:smooth;
+}
+
+.tele-scroll::-webkit-scrollbar{display:none}
+
+.tele-text{
+  max-width:1060px;
+  margin:0 auto;
+  text-align:center;
+  white-space:pre-wrap;
+  line-height:1.55;
+  font-weight:800;
+  letter-spacing:-.035em;
+  color:var(--cream);
+  text-shadow:0 2px 18px rgba(0,0,0,.75);
+  padding-bottom:80vh;
+}
+
+.mirror{transform:scaleX(-1)}
+
+.focus-line{
+  position:absolute;
+  left:40px;
+  right:40px;
+  top:50%;
+  z-index:7;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:.55;
+  pointer-events:none;
+}
+
+.camera-guide{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:9;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  pointer-events:none;
+}
+
+.camera-guide.top{top:42px}
+.camera-guide.center{top:50%;transform:translate(-50%,-50%)}
+.camera-guide.bottom{bottom:42px}
+
+.lens-label{
+  border:1px solid var(--border);
+  background:rgba(9,6,5,.82);
+  color:var(--gold2);
+  padding:9px 15px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.lens-dot{
+  width:17px;
+  height:17px;
+  border-radius:50%;
+  border:2px solid var(--gold2);
+  background:rgba(216,180,106,.2);
+  box-shadow:0 0 18px rgba(216,180,106,.8);
+}
+
+.lens-line{
+  width:330px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+
+@media(max-width:850px){
+  body{overflow:auto}
+  .app{display:block;height:auto;padding:10px}
+  .panel{margin-bottom:10px}
+  .stage{min-height:74vh}
+  .tele-scroll{height:74vh;padding:110px 24px}
+  textarea{min-height:160px}
+  .controls-grid{grid-template-columns:1fr 1fr}
 }
 </style>
 </head>
 
 <body>
+<div class="app">
+  <section class="panel">
+    <div class="brand-kicker">Creator Edition</div>
+    <h1>Smart Teleprompter</h1>
+    <div class="subtitle">
+      A premium recording assistant for creators, speakers, coaches, and business owners who want confident delivery on camera.
+    </div>
+    <div class="pill">✨ Multilingual • Mirror Mode • Camera Guide</div>
 
-<div id="controls">
-  <textarea id="textInput">Paste your script here...</textarea><br>
+    <label for="language">Target Language</label>
+    <select id="language">
+      <option value="en">English</option>
+      <option value="pt">Portuguese</option>
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="de">German</option>
+      <option value="it">Italian</option>
+      <option value="nl">Dutch</option>
+      <option value="pl">Polish</option>
+      <option value="tr">Turkish</option>
+      <option value="ru">Russian</option>
+      <option value="ja">Japanese</option>
+      <option value="ko">Korean</option>
+      <option value="zh-CN">Chinese (Simplified)</option>
+      <option value="hi">Hindi</option>
+      <option value="sw">Swahili</option>
+      <option value="ar">Arabic</option>
+      <option value="ht">Haitian Creole</option>
+    </select>
 
-  <button onclick="start()">Play</button>
-  <button onclick="stop()">Pause</button>
-  <button onclick="toggleMirror()">Mirror</button>
+    <div id="portugueseControls" class="dictionary-box">
+      <label for="ptLocale" style="margin-top:0;">Portuguese Mode</label>
+      <select id="ptLocale">
+        <option value="pt-BR">Português (Brasil)</option>
+        <option value="pt-PT">Português (Portugal)</option>
+      </select>
+      <div class="upgrade-note">
+        Portuguese dictionary cleanup protects brand terms and improves phrase choices.
+      </div>
+    </div>
 
-  <br>
+    <label for="script">Script</label>
+    <textarea id="script">Welcome to Smart Teleprompter. Paste or type your script here, press play, and adjust the speed live while you record.</textarea>
 
-  Speed:
-  <input type="range" id="speed" min="1" max="10" value="3">
+    <div class="controls-grid">
+      <button class="primary" id="translateBtn">Translate</button>
+      <button id="copyEnglishBtn">Copy English</button>
+      <button class="primary" id="playBtn">Play</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+      <button id="mirrorBtn">Mirror</button>
+      <button id="guideBtn" class="active">Camera Guide</button>
+      <button id="clearBtn">Clear</button>
+    </div>
 
-  <br>
+    <div class="slider-row">
+      <div class="slider-top"><span>Scroll Speed</span><strong id="speedValue">35</strong></div>
+      <input id="speed" type="range" min="5" max="120" value="35">
+    </div>
 
-  Font:
-  <input type="range" id="font" min="20" max="80" value="40">
+    <div class="slider-row">
+      <div class="slider-top"><span>Font Size</span><strong id="fontValue">48px</strong></div>
+      <input id="fontSize" type="range" min="24" max="92" value="48">
+    </div>
 
-  <br>
+    <label for="cameraPos">Camera Position</label>
+    <select id="cameraPos">
+      <option value="top">Top camera / webcam</option>
+      <option value="center">Center lens / phone mount</option>
+      <option value="bottom">Bottom camera / low tripod</option>
+    </select>
 
-  Language:
-  <select id="language">
-    <option value="en">English</option>
-    <option value="es">Spanish</option>
-    <option value="pt">Portuguese</option>
-    <option value="fr">French</option>
-    <option value="de">German</option>
-    <option value="it">Italian</option>
-    <option value="ar">Arabic</option>
-    <option value="ht">Haitian Creole</option>
-  </select>
+    <div id="status" class="status">Choose a language, translate, then press Play.</div>
+    <div class="upgrade-note">Your scripts save locally in this browser by language.</div>
+  </section>
 
-  <button onclick="translateText()">Translate</button>
+  <section class="stage">
+    <div class="badge" id="badge">English • Creator</div>
+    <div class="top-title">Smart Teleprompter</div>
+    <div class="focus-line"></div>
+
+    <div class="camera-guide top" id="cameraGuide">
+      <div class="lens-label">Look here — camera lens</div>
+      <div class="lens-dot"></div>
+      <div class="lens-line"></div>
+    </div>
+
+    <div class="tele-scroll" id="viewport">
+      <div class="tele-text" id="teleText"></div>
+    </div>
+  </section>
 </div>
 
-<div id="badge">Creator Edition</div>
-<div id="guide">Look Here</div>
-<div id="teleprompter"></div>
-
 <script>
-let interval;
-let position = -window.innerHeight;
-
-function start() {
-  const text = document.getElementById("textInput").value;
-  const tele = document.getElementById("teleprompter");
-  tele.innerText = text;
-  position = window.innerHeight;
-
-  interval = setInterval(() => {
-    let speed = document.getElementById("speed").value;
-    position -= speed;
-    tele.style.bottom = position + "px";
-  }, 30);
-}
-
-function stop() {
-  clearInterval(interval);
-}
-
-function toggleMirror() {
-  const tele = document.getElementById("teleprompter");
-  tele.style.transform =
-    tele.style.transform === "scaleX(-1)" ? "scaleX(1)" : "scaleX(-1)";
-}
-
-document.getElementById("font").oninput = function() {
-  document.getElementById("teleprompter").style.fontSize =
-    this.value + "px";
+const languageNames = {
+  "en":"English",
+  "pt":"Portuguese",
+  "es":"Spanish",
+  "fr":"French",
+  "de":"German",
+  "it":"Italian",
+  "nl":"Dutch",
+  "pl":"Polish",
+  "tr":"Turkish",
+  "ru":"Russian",
+  "ja":"Japanese",
+  "ko":"Korean",
+  "zh-CN":"Chinese (Simplified)",
+  "hi":"Hindi",
+  "sw":"Swahili",
+  "ar":"Arabic",
+  "ht":"Haitian Creole"
 };
 
-async function translateText() {
-  const text = document.getElementById("textInput").value;
-  const lang = document.getElementById("language").value;
+const fallbackText = {
+  en:"Welcome to Smart Teleprompter. Paste or type your script here, press play, and adjust the speed live while you record.",
+  pt:"Use o inglês como roteiro base e depois traduza para o idioma selecionado com um clique. Cada idioma mantém seu próprio roteiro salvo para prática e gravação.",
+  es:"Usa el inglés como guion base y luego tradúcelo al idioma seleccionado con un clic. Cada idioma conserva su propio guion guardado para práctica y grabación.",
+  fr:"Utilisez l’anglais comme script de base puis traduisez-le dans la langue choisie en un clic. Chaque langue conserve son propre script pour la pratique et l’enregistrement.",
+  de:"Verwende Englisch als Basisskript und übersetze es dann mit einem Klick in die ausgewählte Sprache. Jede Sprache behält ihr eigenes gespeichertes Skript zum Üben und Aufnehmen.",
+  it:"Usa l’inglese come script di base e poi traducilo nella lingua selezionata con un clic. Ogni lingua mantiene il proprio script salvato per esercitazione e registrazione.",
+  nl:"Gebruik Engels als basisscript en vertaal het vervolgens met één klik naar de geselecteerde taal. Elke taal behoudt zijn eigen opgeslagen script voor oefenen en opnemen.",
+  pl:"Użyj angielskiego jako podstawowego skryptu, a następnie przetłumacz go na wybrany język jednym kliknięciem. Każdy język zachowuje własny zapisany skrypt do ćwiczeń i nagrywania.",
+  tr:"İngilizceyi temel metin olarak kullanın ve ardından seçilen dile tek tıklamayla çevirin. Her dil, pratik ve kayıt için kendi kayıtlı metnini saklar.",
+  ru:"Используйте английский как основной текст, а затем переведите его на выбранный язык одним нажатием. Для каждого языка сохраняется свой текст для практики и записи.",
+  ja:"英語をベース原稿として使い、ワンクリックで選択した言語に翻訳します。各言語ごとに練習や録音用の原稿が個別に保存されます。",
+  ko:"영어를 기본 스크립트로 사용한 다음 한 번의 클릭으로 선택한 언어로 번역하세요. 각 언어는 연습과 녹음을 위해 자체 저장 스크립트를 유지합니다.",
+  "zh-CN":"使用英语作为基础脚本，然后一键翻译成所选语言。每种语言都会保留各自已保存的脚本，便于练习和录制。",
+  hi:"अंग्रेज़ी को अपने बेस स्क्रिप्ट के रूप में उपयोग करें, फिर एक क्लिक में इसे चुनी हुई भाषा में अनुवाद करें। प्रत्येक भाषा अभ्यास और रिकॉर्डिंग के लिए अपना अलग सहेजा गया स्क्रिप्ट रखती है।",
+  sw:"Tumia Kiingereza kama hati ya msingi, kisha itafsiri kwa lugha uliyochagua kwa mbofyo mmoja. Kila lugha huhifadhi hati yake kwa ajili ya mazoezi na kurekodi.",
+  ar:"استخدم الإنجليزية كنص أساسي ثم ترجمها إلى اللغة المحددة بضغطة واحدة. تحتفظ كل لغة بنصها الخاص للتدريب والتسجيل.",
+  ht:"Sèvi ak anglè kòm script baz la epi tradui li nan lang ou chwazi a ak yon sèl klik. Chak lang kenbe pwòp script li pou pratik ak anrejistreman."
+};
 
-  const res = await fetch(
-    "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=" +
-      lang +
-      "&dt=t&q=" +
-      encodeURIComponent(text)
+const protectedTerms = [
+  "Smart Teleprompter",
+  "ChatGPT",
+  "OpenAI",
+  "Haynes Custom Cups & More"
+];
+
+const phraseDictionaryBase = [
+  ["base script","roteiro base"],
+  ["selected language","idioma selecionado"],
+  ["one click","um clique"],
+  ["saved script","roteiro salvo"],
+  ["saved scripts","roteiros salvos"],
+  ["read time","tempo de leitura"],
+  ["font size","tamanho da fonte"],
+  ["scroll speed","velocidade da rolagem"],
+  ["translation workflow","fluxo de tradução"],
+  ["copy english","copiar inglês"],
+  ["translate from english","traduzir do inglês"],
+  ["loaded into the teleprompter","carregada no teleprompter"],
+  ["paste or type","cole ou digite"],
+  ["press play","clique em reproduzir"],
+  ["adjust the speed","ajuste a velocidade"],
+  ["while you record","enquanto você grava"]
+];
+
+const phraseDictionaryByLocale = {
+  "pt-BR":[["teleprompter","teleprompter"]],
+  "pt-PT":[["teleprompter","teleponto"]]
+};
+
+const wordDictionaryBase = {
+  script:"roteiro",
+  scripts:"roteiros",
+  record:"gravar",
+  recording:"gravação",
+  play:"reproduzir",
+  pause:"pausar",
+  language:"idioma",
+  languages:"idiomas",
+  translation:"tradução",
+  translate:"traduzir",
+  speed:"velocidade",
+  font:"fonte",
+  copy:"copiar",
+  workflow:"fluxo",
+  loaded:"carregada",
+  smooth:"suave"
+};
+
+const wordDictionaryByLocale = {
+  "pt-BR":{save:"salvar",saved:"salvo"},
+  "pt-PT":{save:"guardar",saved:"guardado"}
+};
+
+const script = document.getElementById("script");
+const teleText = document.getElementById("teleText");
+const viewport = document.getElementById("viewport");
+const playBtn = document.getElementById("playBtn");
+const pauseBtn = document.getElementById("pauseBtn");
+const resetBtn = document.getElementById("resetBtn");
+const mirrorBtn = document.getElementById("mirrorBtn");
+const guideBtn = document.getElementById("guideBtn");
+const clearBtn = document.getElementById("clearBtn");
+const translateBtn = document.getElementById("translateBtn");
+const copyEnglishBtn = document.getElementById("copyEnglishBtn");
+const speed = document.getElementById("speed");
+const fontSize = document.getElementById("fontSize");
+const speedValue = document.getElementById("speedValue");
+const fontValue = document.getElementById("fontValue");
+const language = document.getElementById("language");
+const badge = document.getElementById("badge");
+const cameraGuide = document.getElementById("cameraGuide");
+const cameraPos = document.getElementById("cameraPos");
+const statusBox = document.getElementById("status");
+const portugueseControls = document.getElementById("portugueseControls");
+const ptLocale = document.getElementById("ptLocale");
+
+let playing = false;
+let last = null;
+let animation = null;
+let mirror = false;
+let guide = true;
+
+function getSavedScripts(){
+  try{
+    return JSON.parse(localStorage.getItem("smartTeleprompterLanguageScripts")) || {};
+  }catch{
+    return {};
+  }
+}
+
+function saveScripts(s){
+  localStorage.setItem("smartTeleprompterLanguageScripts", JSON.stringify(s));
+}
+
+function code(){
+  return language.value;
+}
+
+function currentText(){
+  return script.value.trim() || fallbackText[code()] || fallbackText.en;
+}
+
+function setStatus(msg,type=""){
+  statusBox.textContent = msg;
+  statusBox.className = "status " + type;
+}
+
+function escapeRegex(v){
+  return v.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+}
+
+function preserveCase(source,replacement){
+  if(source.toUpperCase() === source) return replacement.toUpperCase();
+
+  if(
+    source[0] &&
+    source[0].toUpperCase() === source[0] &&
+    source.slice(1).toLowerCase() === source.slice(1)
+  ){
+    return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+  }
+
+  return replacement;
+}
+
+function protectTerms(text){
+  let output = text;
+  let map = {};
+
+  protectedTerms.forEach((term,i)=>{
+    const token = "__PROTECTED_TERM_" + i + "__";
+    output = output.replace(new RegExp(escapeRegex(term),"g"), token);
+    map[token] = term;
+  });
+
+  return {output,map};
+}
+
+function restoreProtectedTerms(text,map){
+  let output = text;
+
+  Object.keys(map).forEach(token=>{
+    output = output.split(token).join(map[token]);
+  });
+
+  return output;
+}
+
+function applyPhraseDictionary(text,dictionary){
+  return dictionary.reduce((output,pair)=>{
+    return output.replace(
+      new RegExp(escapeRegex(pair[0]),"gi"),
+      match => preserveCase(match,pair[1])
+    );
+  },text);
+}
+
+function applyWordDictionary(text,dictionary){
+  return Object.keys(dictionary).reduce((output,source)=>{
+    return output.replace(
+      new RegExp("\\b"+escapeRegex(source)+"\\b","gi"),
+      match => preserveCase(match,dictionary[source])
+    );
+  },text);
+}
+
+function applyPortugueseDictionary(text){
+  const locale = ptLocale.value || "pt-BR";
+  const data = protectTerms(text);
+  const phrases = phraseDictionaryBase.concat(phraseDictionaryByLocale[locale] || []);
+  const words = Object.assign({},wordDictionaryBase,wordDictionaryByLocale[locale] || {});
+
+  return restoreProtectedTerms(
+    applyWordDictionary(
+      applyPhraseDictionary(data.output,phrases),
+      words
+    ),
+    data.map
   );
+}
+
+async function translateText(text,target){
+  if(target === "en") return text;
+
+  const url =
+    "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=" +
+    encodeURIComponent(target) +
+    "&dt=t&q=" +
+    encodeURIComponent(text);
+
+  const res = await fetch(url);
+
+  if(!res.ok) throw new Error("Translation failed");
 
   const data = await res.json();
-  let translated = data[0].map(t => t[0]).join("");
 
-  document.getElementById("textInput").value = translated;
+  let translated = Array.isArray(data && data[0])
+    ? data[0].map(chunk => Array.isArray(chunk) ? String(chunk[0] || "") : "").join("")
+    : "";
+
+  if(!translated.trim()) throw new Error("Empty translation");
+
+  if(target === "pt"){
+    translated = applyPortugueseDictionary(translated);
+  }
+
+  return translated;
 }
-</script>
 
+function updateText(save=true){
+  teleText.textContent = currentText();
+  teleText.dir = code() === "ar" ? "rtl" : "ltr";
+
+  if(save){
+    const s = getSavedScripts();
+    s[code()] = script.value;
+    saveScripts(s);
+  }
+}
+
+function updateLanguage(){
+  badge.textContent = languageNames[code()] + " • Creator" + (mirror ? " • Mirror" : "");
+  portugueseControls.style.display = code() === "pt" ? "block" : "none";
+}
+
+function loadLanguage(){
+  const s = getSavedScripts();
+  script.value = s[code()] || "";
+  updateText(false);
+  updateLanguage();
+  viewport.scrollTop = 0;
+
+  setStatus(
+    code() === "en"
+      ? "Edit your English base script."
+      : "Translate from English or paste your " + languageNames[code()] + " script."
+  );
+}
+
+async function handleTranslate(){
+  const target = code();
+
+  if(target === "en"){
+    setStatus("English is already your base script.");
+    updateText();
+    return;
+  }
+
+  const s = getSavedScripts();
+  const english = (s.en || script.value || fallbackText.en).trim();
+
+  if(!english){
+    setStatus("Add an English script first, then translate.","error");
+    return;
+  }
+
+  translateBtn.disabled = true;
+  translateBtn.textContent = "Translating...";
+  setStatus("Translating into " + languageNames[target] + "...");
+
+  try{
+    const translated = await translateText(english,target);
+    s[target] = translated;
+    saveScripts(s);
+    script.value = translated;
+    updateText(false);
+    viewport.scrollTop = 0;
+    setStatus("Translation loaded into the teleprompter.","success");
+  }catch(e){
+    setStatus("Translation failed. Your browser or network may be blocking the translation request.","error");
+  }finally{
+    translateBtn.disabled = false;
+    translateBtn.textContent = "Translate";
+  }
+}
+
+function updateFont(){
+  teleText.style.fontSize = fontSize.value + "px";
+  fontValue.textContent = fontSize.value + "px";
+}
+
+function updateSpeed(){
+  speedValue.textContent = speed.value;
+}
+
+function setCameraPosition(){
+  cameraGuide.className = "camera-guide " + cameraPos.value;
+}
+
+function loop(t){
+  if(!playing) return;
+
+  if(last === null) last = t;
+
+  const delta = t - last;
+  last = t;
+
+  viewport.scrollTop += (Number(speed.value) * delta) / 1000;
+
+  if(viewport.scrollTop >= teleText.scrollHeight){
+    playing = false;
+    last = null;
+    return;
+  }
+
+  animation = requestAnimationFrame(loop);
+}
+
+playBtn.onclick = ()=>{
+  updateText();
+  playing = true;
+  last = null;
+  cancelAnimationFrame(animation);
+  animation = requestAnimationFrame(loop);
+};
+
+pauseBtn.onclick = ()=>{
+  playing = false;
+  last = null;
+  cancelAnimationFrame(animation);
+};
+
+resetBtn.onclick = ()=>{
+  playing = false;
+  last = null;
+  cancelAnimationFrame(animation);
+  viewport.scrollTop = 0;
+};
+
+clearBtn.onclick = ()=>{
+  script.value = "";
+  updateText();
+  viewport.scrollTop = 0;
+  setStatus("Script cleared.");
+};
+
+mirrorBtn.onclick = ()=>{
+  mirror = !mirror;
+  teleText.classList.toggle("mirror",mirror);
+  mirrorBtn.classList.toggle("active",mirror);
+  updateLanguage();
+};
+
+guideBtn.onclick = ()=>{
+  guide = !guide;
+  cameraGuide.style.display = guide ? "flex" : "none";
+  guideBtn.classList.toggle("active",guide);
+};
+
+copyEnglishBtn.onclick = ()=>{
+  const s = getSavedScripts();
+  script.value = s.en || fallbackText.en;
+  updateText();
+  setStatus("English copied into this script box.","success");
+};
+
+translateBtn.onclick = handleTranslate;
+
+script.addEventListener("input",()=>updateText(true));
+language.addEventListener("change",loadLanguage);
+speed.addEventListener("input",updateSpeed);
+fontSize.addEventListener("input",updateFont);
+cameraPos.addEventListener("change",setCameraPosition);
+
+ptLocale.addEventListener("change",()=>{
+  if(language.value === "pt" && script.value.trim()){
+    script.value = applyPortugueseDictionary(script.value);
+    updateText();
+    setStatus("Portuguese dictionary cleanup applied.","success");
+  }
+});
+
+const initial = getSavedScripts();
+
+if(!initial.en){
+  initial.en = fallbackText.en;
+  saveScripts(initial);
+}
+
+loadLanguage();
+
+if(code() === "en"){
+  script.value = initial.en;
+  updateText(false);
+}
+
+updateFont();
+updateSpeed();
+setCameraPosition();
+</script>
 </body>
 </html>
